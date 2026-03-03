@@ -1,73 +1,92 @@
-# PI setup config (Windows + macOS)
+# pi-setup-config
 
-This repo stores your **PI agent setup** so you can keep the same experience on multiple machines.
+Simple backup/sync repo for your PI setup across **Windows + macOS**.
 
-It currently syncs:
-
-- `settings.json`
-- custom `themes/`
-- `skills/` (including your local custom skill folders)
-
-It intentionally does **not** sync sensitive/auth files like `auth.json` or session history.
-
-## Repo layout
+This repo contains only what you need:
 
 - `config/settings.json`
 - `config/themes/*`
 - `config/skills/*`
-- `scripts/apply-config.mjs` → apply repo config to local `~/.pi/agent`
-- `scripts/export-config.mjs` → export current local `~/.pi/agent` back into this repo
+
+It does **not** include auth/session files.
 
 ---
 
-## 1) Clone on any machine
+## macOS setup
 
 ```bash
+cd ~/Downloads
 git clone https://github.com/gustavonline/pi-setup-config.git
 cd pi-setup-config
+
+# optional backup
+mkdir -p ~/.pi
+[ -d ~/.pi/agent ] && cp -R ~/.pi/agent ~/.pi/agent.backup.$(date +%Y%m%d-%H%M%S)
+
+# apply config
+mkdir -p ~/.pi/agent
+cp config/settings.json ~/.pi/agent/settings.json
+rm -rf ~/.pi/agent/themes ~/.pi/agent/skills
+cp -R config/themes ~/.pi/agent/themes
+cp -R config/skills ~/.pi/agent/skills
+
+# install deps for skills
+find ~/.pi/agent/skills -name package.json -not -path '*/node_modules/*' -print0 | while IFS= read -r -d '' pkg; do
+  d="$(dirname "$pkg")"
+  (
+    cd "$d"
+    if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi
+  )
+done
+```
+
+Restart PI after setup.
+
+---
+
+## Windows (PowerShell) setup
+
+```powershell
+cd $HOME\Downloads
+git clone https://github.com/gustavonline/pi-setup-config.git
+cd .\pi-setup-config
+
+$target = Join-Path $HOME ".pi\agent"
+New-Item -ItemType Directory -Force -Path $target | Out-Null
+Copy-Item .\config\settings.json (Join-Path $target "settings.json") -Force
+Remove-Item (Join-Path $target "themes") -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item (Join-Path $target "skills") -Recurse -Force -ErrorAction SilentlyContinue
+Copy-Item .\config\themes (Join-Path $target "themes") -Recurse -Force
+Copy-Item .\config\skills (Join-Path $target "skills") -Recurse -Force
+
+Get-ChildItem (Join-Path $target "skills") -Recurse -Filter package.json | ForEach-Object {
+  $dir = $_.Directory.FullName
+  Push-Location $dir
+  if (Test-Path "package-lock.json") { npm ci --omit=dev } else { npm install --omit=dev }
+  Pop-Location
+}
 ```
 
 ---
 
-## 2) Apply this config to your local PI setup
+## Keep repo updated
+
+After changing local PI config:
 
 ```bash
-npm run apply
-```
+cd ~/Downloads/pi-setup-config
+cp ~/.pi/agent/settings.json config/settings.json
+rm -rf config/themes config/skills
+cp -R ~/.pi/agent/themes config/themes
+cp -R ~/.pi/agent/skills config/skills
+find config/skills -type d -name node_modules -prune -exec rm -rf {} +
+find config/skills -type f -name .package-lock.json -delete
 
-If you also want all skill dependencies installed:
-
-```bash
-npm run apply:with-deps
-```
-
-This writes to:
-
-- macOS: `~/.pi/agent`
-- Windows: `%USERPROFILE%\\.pi\\agent` (resolved automatically by Node)
-
----
-
-## 3) Update the repo after making local PI changes
-
-After editing themes/skills/settings locally:
-
-```bash
-npm run export
 git add .
 git commit -m "Update PI config"
 git push
 ```
 
-Then pull on your other machine and run:
-
-```bash
-npm run apply:with-deps
-```
-
 ---
 
-## Notes
-
-- If PI is open while syncing, restart PI after `apply`.
-- `node_modules` inside skill folders are not stored in git; they are reinstalled with `apply:with-deps`.
+Assistant prompt to use on MacBook: `SETUP_PROMPT.md`
