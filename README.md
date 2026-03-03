@@ -42,6 +42,18 @@ done
 
 Restart PI after setup.
 
+If you use the `brave-search` skill, set your API key on each machine (do not commit this):
+
+```bash
+echo 'export BRAVE_API_KEY="your-api-key-here"' >> ~/.zprofile
+source ~/.zprofile
+```
+
+For `vps-temporary-ssh` (e.g. Hetzner):
+- Temporary access: you usually **do not** need to add your machine key in Hetzner SSH Keys.
+- Just run the generated one-liner in the Hetzner web console; it adds a temporary key and auto-removes it after 30 minutes.
+- Permanent access: add your machine public key in Hetzner Cloud SSH Keys and add/select it for your server.
+
 ---
 
 ## Windows (PowerShell) setup
@@ -81,6 +93,7 @@ cp -R ~/.pi/agent/themes config/themes
 cp -R ~/.pi/agent/skills config/skills
 find config/skills -type d -name node_modules -prune -exec rm -rf {} +
 find config/skills -type f -name .package-lock.json -delete
+find config/skills -type f -name "*.js" -exec chmod +x {} +
 
 git add .
 git commit -m "Update PI config"

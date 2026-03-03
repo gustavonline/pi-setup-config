@@ -15,12 +15,16 @@ Do this:
 3. Apply repo config to `~/.pi/agent`:
    - copy `settings.json`
    - replace `themes` and `skills`
+   - delete `~/.pi/agent/themes/warp.json` if present
 4. Install dependencies in each skill folder with `package.json`:
    - use `npm ci --omit=dev` if `package-lock.json` exists
    - otherwise `npm install --omit=dev`
-5. Confirm result:
+5. Ensure skill scripts are executable on macOS:
+   - run `find ~/.pi/agent/skills -type f -name "*.js" -exec chmod +x {} +`
+6. Confirm result:
    - show active theme from `~/.pi/agent/settings.json`
    - list installed skill folders
-6. Give me a short summary.
+   - confirm `warp.json` is deleted
+7. Give me a short summary.
 
 Only touch settings/themes/skills. Do not touch auth/session files.
