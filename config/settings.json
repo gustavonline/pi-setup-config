@@ -1,0 +1,9 @@
+{
+  "lastChangelogVersion": "0.55.4",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.3-codex",
+  "theme": "warp-calm-light-blue",
+  "defaultThinkingLevel": "xhigh",
+  "hideThinkingBlock": true,
+  "doubleEscapeAction": "tree"
+}
