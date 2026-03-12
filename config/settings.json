@@ -1,9 +1,13 @@
 {
-  "lastChangelogVersion": "0.55.4",
+  "lastChangelogVersion": "0.57.1",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.3-codex",
   "theme": "warp-calm-light-blue",
   "defaultThinkingLevel": "xhigh",
-  "hideThinkingBlock": true,
-  "doubleEscapeAction": "tree"
+  "hideThinkingBlock": false,
+  "doubleEscapeAction": "tree",
+  "collapseChangelog": true,
+  "packages": [
+    "npm:pi-session-auto-rename"
+  ]
 }

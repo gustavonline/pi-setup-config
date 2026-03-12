@@ -30,9 +30,8 @@ Use this skill when the user wants fast temporary SSH access setup (typically ro
    1. Public key
    2. Fingerprint
    3. File paths to the saved command
-   4. Short clipboard command (macOS by default)
-   5. Optional PowerShell clipboard command (when relevant)
-   6. Optional direct local-to-VPS execution command if host/IP is known
+   4. Short clipboard command (Windows PowerShell)
+   5. Optional direct local-to-VPS execution command if host/IP is known
 
 ## Agent-side key generation
 
@@ -80,7 +79,7 @@ ${CMD}
 EOF
 ```
 
-If useful (Windows users), also get Windows path for user:
+If useful, also get Windows path for user:
 
 ```bash
 CMD_TXT_WIN="$(cygpath -w "$CMD_TXT" 2>/dev/null || true)"
@@ -96,13 +95,11 @@ Use concise output:
 1. `Her er public key:` + key line
 2. `Fingerprint:` + fingerprint line
 3. `Kommando gemt i:` + `.txt` path (and `.md` path)
-4. `Kopiér sikkert til clipboard (macOS):`
-   - `pbcopy < "<CMD_TXT_PATH>"`
-5. `Kopiér sikkert til clipboard (PowerShell, hvis relevant):`
+4. `Kopiér sikkert til clipboard (PowerShell):`
    - `Get-Content -Raw "<WIN_CMD_TXT_PATH>" | Set-Clipboard`
-6. If VPS host/IP is known, also provide:
+5. If VPS host/IP is known, also provide:
    - `ssh root@<HOST> "$(cat '<CMD_TXT_PATH>')"`
-7. `Sig til når kommandoen er kørt, så fortsætter jeg.`
+6. `Sig til når kommandoen er kørt, så fortsætter jeg.`
 
 ## Safety notes
 
